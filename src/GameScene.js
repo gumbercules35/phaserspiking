@@ -50,9 +50,11 @@ export default class GameScene extends Phaser.Scene {
 
       this.player.anims.play("turn");
     }
-
-    console.log(this.player.body.touching.down);
-    if (this.cursors.up.isDown && this.player.body.touching.down) {
+    console.log(
+      "🚀 ~ file: GameScene.js:58 ~ this.player.body.blocked.down;:",
+      this.player.body.blocked.down
+    );
+    if (this.cursors.up.isDown && this.player.body.blocked.down) {
       this.player.setVelocityY(-330);
     }
   }
