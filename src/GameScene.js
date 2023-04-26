@@ -13,7 +13,7 @@ export default class GameScene extends Phaser.Scene {
   preload() {
     //Preload Sprites Images
     this.load.image("sky", "/assets/sky.png");
-    this.load.image(GROUND_KEY, "/assets/ground.png");
+    this.load.image(GROUND_KEY, "/assets/platform.png");
     this.load.image("star", "/assets/star.png");
     this.load.image("bomb", "/assets/bomb.png");
     this.load.image(STAR_KEY, "/assets/star.png");
@@ -50,10 +50,7 @@ export default class GameScene extends Phaser.Scene {
 
       this.player.anims.play("turn");
     }
-    console.log(
-      "🚀 ~ file: GameScene.js:58 ~ this.player.body.blocked.down;:",
-      this.player.body.blocked.down
-    );
+
     if (this.cursors.up.isDown && this.player.body.blocked.down) {
       this.player.setVelocityY(-330);
     }
@@ -102,7 +99,7 @@ export default class GameScene extends Phaser.Scene {
   }
   createPlatforms() {
     const platforms = this.physics.add.staticGroup();
-    platforms.create(400, 568, GROUND_KEY).setScale(10, 2).refreshBody();
+    platforms.create(400, 568, GROUND_KEY).setScale(2).refreshBody();
 
     platforms.create(600, 400, GROUND_KEY);
     platforms.create(50, 250, GROUND_KEY);
