@@ -5,16 +5,17 @@ const DUDE_KEY = "dude";
 export default class GameScene extends Phaser.Scene {
   constructor() {
     super("game-scene");
-    this.player = null;
+    this.player = undefined;
+    this.cursors = undefined;
   }
   preload() {
     //Preload Sprites Images
-    this.load.image("sky", "../public/assets/sky.png");
-    this.load.image(GROUND_KEY, "../public/assets/ground.png");
-    this.load.image("star", "../public/assets/star.png");
-    this.load.image("bomb", "../public/assets/bomb.png");
+    this.load.image("sky", "/assets/sky.png");
+    this.load.image(GROUND_KEY, "/assets/ground.png");
+    this.load.image("star", "/assets/star.png");
+    this.load.image("bomb", "/assets/bomb.png");
 
-    this.load.spritesheet(DUDE_KEY, "../public/assets/dude.png", {
+    this.load.spritesheet(DUDE_KEY, "/assets/dude.png", {
       frameWidth: 32,
       frameHeight: 48,
     });
@@ -23,14 +24,39 @@ export default class GameScene extends Phaser.Scene {
   create() {
     this.add.image(400, 300, "sky");
 
-    this.createPlatforms();
-    this.createPlayer();
+    const platforms = this.createPlatforms();
+    this.player = this.createPlayer();
+
+    this.physics.add.collider(this.player, platforms);
+
+    this.cursors = this.input.keyboard.createCursorKeys();
+  }
+
+  update() {
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(-160);
+
+      this.player.anims.play("left", true);
+    } else if (this.cursors.right.isDown) {
+      this.player.setVelocityX(160);
+
+      this.player.anims.play("right", true);
+    } else {
+      this.player.setVelocityX(0);
+
+      this.player.anims.play("turn");
+    }
+
+    console.log(this.player.body.touching.down);
+    if (this.cursors.up.isDown && this.player.body.touching.down) {
+      this.player.setVelocityY(-330);
+    }
   }
 
   createPlayer() {
-    this.player = this.physics.add.sprite(100, 450, DUDE_KEY);
-    this.player.setBounce(0.2);
-    this.player.setCollideWorldBounds(true);
+    const player = this.physics.add.sprite(400, 450, DUDE_KEY);
+    player.setBounce(0.2);
+    player.setCollideWorldBounds(true);
 
     this.anims.create({
       key: "left",
@@ -38,6 +64,21 @@ export default class GameScene extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
+
+    this.anims.create({
+      key: "turn",
+      frames: [{ key: DUDE_KEY, frame: 4 }],
+      frameRate: 20,
+    });
+
+    this.anims.create({
+      key: "right",
+      frames: this.anims.generateFrameNumbers(DUDE_KEY, { start: 5, end: 8 }),
+      frameRate: 10,
+      repeat: -1,
+    });
+
+    return player;
   }
 
   createPlatforms() {
@@ -47,5 +88,7 @@ export default class GameScene extends Phaser.Scene {
     platforms.create(600, 400, GROUND_KEY);
     platforms.create(50, 250, GROUND_KEY);
     platforms.create(750, 220, GROUND_KEY);
+
+    return platforms;
   }
 }
