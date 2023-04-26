@@ -2,6 +2,8 @@ import Phaser from "phaser";
 
 const GROUND_KEY = "ground";
 const DUDE_KEY = "dude";
+const STAR_KEY = "star";
+
 export default class GameScene extends Phaser.Scene {
   constructor() {
     super("game-scene");
@@ -14,6 +16,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image(GROUND_KEY, "/assets/ground.png");
     this.load.image("star", "/assets/star.png");
     this.load.image("bomb", "/assets/bomb.png");
+    this.load.image(STAR_KEY, "/assets/star.png");
 
     this.load.spritesheet(DUDE_KEY, "/assets/dude.png", {
       frameWidth: 32,
@@ -25,10 +28,11 @@ export default class GameScene extends Phaser.Scene {
     this.add.image(400, 300, "sky");
 
     const platforms = this.createPlatforms();
+    const stars = this.createStars();
     this.player = this.createPlayer();
 
     this.physics.add.collider(this.player, platforms);
-
+    this.physics.add.collider(stars, platforms);
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
@@ -81,9 +85,22 @@ export default class GameScene extends Phaser.Scene {
     return player;
   }
 
+  createStars() {
+    const stars = this.physics.add.group({
+      key: STAR_KEY,
+      repeat: 11,
+      setXY: { x: 12, y: 0, stepX: 70 },
+    });
+
+    stars.children.iterate((child) => {
+      child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    });
+
+    return stars;
+  }
   createPlatforms() {
     const platforms = this.physics.add.staticGroup();
-    platforms.create(400, 568, GROUND_KEY).setScale(2).refreshBody();
+    platforms.create(400, 568, GROUND_KEY).setScale(10, 2).refreshBody();
 
     platforms.create(600, 400, GROUND_KEY);
     platforms.create(50, 250, GROUND_KEY);
