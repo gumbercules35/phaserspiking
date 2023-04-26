@@ -92,7 +92,8 @@ export default class GameScene extends Phaser.Scene {
     });
 
     stars.children.iterate((child) => {
-      child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+      child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8)); //This setBounceY is available on the prototype, not the actual child itself
+      console.log("🚀 ~ file: GameScene.js:96 ~ child:", child);
     });
 
     return stars;
