@@ -121,6 +121,7 @@ export default class GameScene extends Phaser.Scene {
   hitBomb(player, bomb) {
     this.explode.play();
     this.physics.pause();
+    this.music.stop();
 
     player.setTint(0xff0000);
 
