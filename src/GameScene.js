@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import ScoreLabel from "./ui/ScoreLabel";
 import BombSpawner from "./BombSpawner";
+import { addDoc, collection } from "@firebase/firestore";
+import { firestore } from "./firebase";
 
 const GROUND_KEY = "ground";
 const DUDE_KEY = "dude";
@@ -97,6 +99,8 @@ export default class GameScene extends Phaser.Scene {
     player.setTint(0xff0000);
 
     player.anims.play("turn");
+    
+    this.submitScore(this.scoreLabel.score);
 
     this.gameOver = true;
   }
@@ -170,5 +174,18 @@ export default class GameScene extends Phaser.Scene {
     }
 
     this.bombSpawner.spawn(player.x);
+  }
+
+  submitScore(score) {
+    const ref = collection(firestore, "scores");
+    let data = {
+      score: score,
+    };
+
+    try {
+      addDoc(ref, data);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
