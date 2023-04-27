@@ -35,6 +35,7 @@ export default class GameScene extends Phaser.Scene {
     this.stars = undefined;
     this.bombSpawner = undefined;
     this.gameOver = false;
+    this.hasHit = false;
   }
   preload() {
     //Preload Sprites Images
@@ -119,23 +120,28 @@ export default class GameScene extends Phaser.Scene {
   }
 
   hitBomb(player, bomb) {
-    this.explode.play();
-    this.physics.pause();
-    this.music.stop();
+    if (!this.hasHit) {
+      this.explode.play();
+      this.physics.pause();
+      this.music.stop();
 
-    player.setTint(0xff0000);
+      player.setTint(0xff0000);
 
-    player.anims.play("turn");
+      player.anims.play("turn");
 
-    this.submitScore(this.scoreLabel.score);
+      this.submitScore(this.scoreLabel.score);
 
-    this.gameOverText = this.add
-      .text(400, 300, "Game Over :)", this.gameOverTextStyle)
-      .setOrigin(0.5);
+      this.gameOverText = this.add
+        .text(400, 300, "Game Over :)", this.gameOverTextStyle)
+        .setOrigin(0.5);
 
-    this.gameOverText.setInteractive({ useHandCursor: true });
-    this.gameOverText.on("pointerdown", () => this.scene.start());
-
+      this.gameOverText.setInteractive({ useHandCursor: true });
+      this.gameOverText.on("pointerdown", () => {
+        this.hasHit = false;
+        this.scene.start();
+      });
+      this.hasHit = true;
+    }
     //this.gameOver = true;
   }
 
