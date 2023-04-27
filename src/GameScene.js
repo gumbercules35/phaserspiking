@@ -10,8 +10,9 @@ const STAR_KEY = "star";
 const BOMB_KEY = "bomb";
 
 export default class GameScene extends Phaser.Scene {
-  constructor() {
-    super("game-scene");
+  constructor(scene = "game-scene") {
+    super(scene);
+
     this.player = undefined;
     this.cursors = undefined;
     this.scoreLabel = undefined;
@@ -70,7 +71,7 @@ export default class GameScene extends Phaser.Scene {
 
   update() {
     if (this.gameOver) {
-      return;
+      this.scene.switch("game-over-scene");
     }
 
     if (this.cursors.left.isDown) {
@@ -99,7 +100,7 @@ export default class GameScene extends Phaser.Scene {
     player.setTint(0xff0000);
 
     player.anims.play("turn");
-    
+
     this.submitScore(this.scoreLabel.score);
 
     this.gameOver = true;
