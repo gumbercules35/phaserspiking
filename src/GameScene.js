@@ -13,6 +13,12 @@ export default class GameScene extends Phaser.Scene {
   constructor(scene = "game-scene") {
     super(scene);
 
+    this.gameOverText = null;
+    this.gameOverTextStyle = {
+      font: "65px Arial",
+      fill: "#ffffff",
+      align: "center",
+    };
     this.player = undefined;
     this.cursors = undefined;
     this.scoreLabel = undefined;
@@ -103,7 +109,14 @@ export default class GameScene extends Phaser.Scene {
 
     this.submitScore(this.scoreLabel.score);
 
-    this.gameOver = true;
+    this.gameOverText = this.add
+      .text(400, 300, "Game Over :)", this.gameOverTextStyle)
+      .setOrigin(0.5);
+
+    this.gameOverText.setInteractive({ useHandCursor: true });
+    this.gameOverText.on("pointerdown", () => this.scene.start());
+
+    //this.gameOver = true;
   }
 
   createPlayer() {
