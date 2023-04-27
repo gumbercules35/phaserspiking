@@ -9,19 +9,21 @@ import {
   getDocs,
   orderBy,
   limit,
+  doc,
+  setDoc,
 } from "@firebase/firestore";
 import { firestore } from "./firebase";
 
 const scoreRef = collection(firestore, "scores");
-
+const highScores = [];
 // const q = query(scoreRef, where("score", "==", 30));
 const q = query(scoreRef, orderBy("score", "desc"), limit(10));
 const querySnapshot = await getDocs(q);
 querySnapshot.forEach((doc) => {
   // doc.data() is never undefined for query doc snapshots
-  console.log(doc.id, " => ", doc.data());
+  highScores.push(doc.data());
 });
-console.log(querySnapshot, "<----- SNAPSHOT");
+console.log(highScores);
 const GROUND_KEY = "ground";
 const DUDE_KEY = "dude";
 const STAR_KEY = "star";
