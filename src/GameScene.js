@@ -1,9 +1,27 @@
 import Phaser from "phaser";
 import ScoreLabel from "./ui/ScoreLabel";
 import BombSpawner from "./BombSpawner";
-import { addDoc, collection } from "@firebase/firestore";
+import {
+  addDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  limit,
+} from "@firebase/firestore";
 import { firestore } from "./firebase";
 
+const scoreRef = collection(firestore, "scores");
+
+// const q = query(scoreRef, where("score", "==", 30));
+const q = query(scoreRef, orderBy("score", "desc"), limit(10));
+const querySnapshot = await getDocs(q);
+querySnapshot.forEach((doc) => {
+  // doc.data() is never undefined for query doc snapshots
+  console.log(doc.id, " => ", doc.data());
+});
+console.log(querySnapshot, "<----- SNAPSHOT");
 const GROUND_KEY = "ground";
 const DUDE_KEY = "dude";
 const STAR_KEY = "star";
@@ -94,7 +112,6 @@ export default class GameScene extends Phaser.Scene {
       this.player.anims.play("turn");
     }
 
-    console.log(this.player.body.touching.down);
     if (this.cursors.up.isDown && this.player.body.touching.down) {
       this.player.setVelocityY(-330);
     }
