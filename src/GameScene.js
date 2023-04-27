@@ -14,16 +14,6 @@ import {
 } from "@firebase/firestore";
 import { firestore } from "./firebase";
 
-const scoreRef = collection(firestore, "scores");
-const highScores = [];
-// const q = query(scoreRef, where("score", "==", 30));
-const q = query(scoreRef, orderBy("score", "desc"), limit(10));
-const querySnapshot = await getDocs(q);
-querySnapshot.forEach((doc) => {
-  // doc.data() is never undefined for query doc snapshots
-  highScores.push(doc.data());
-});
-console.log(highScores);
 const GROUND_KEY = "ground";
 const DUDE_KEY = "dude";
 const STAR_KEY = "star";
@@ -128,7 +118,6 @@ export default class GameScene extends Phaser.Scene {
 
     this.submitScore(this.scoreLabel.score);
 
-    this.createHighScores(highScores);
     this.gameOverText = this.add
       .text(400, 300, "Game Over :)", this.gameOverTextStyle)
       .setOrigin(0.5);
@@ -219,15 +208,24 @@ export default class GameScene extends Phaser.Scene {
   }
 
   submitScore(score) {
-    const ref = collection(firestore, "scores");
+    const scoreRef = collection(firestore, "scores");
+    const highScores = [];
+    const q = query(scoreRef, orderBy("score", "desc"), limit(10));
     let data = {
       score: score,
     };
 
-    try {
-      addDoc(ref, data);
-    } catch (error) {
-      console.log(error);
-    }
+    addDoc(scoreRef, data)
+      .then(() => {
+        return getDocs(q);
+      })
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // doc.data() is never undefined for query doc snapshots
+          highScores.push(doc.data());
+        });
+        this.createHighScores(highScores);
+      })
+      .catch((err) => console.log(err));
   }
 }
