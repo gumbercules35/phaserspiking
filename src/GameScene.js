@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import ScoreLabel from "./ui/ScoreLabel";
 
 const GROUND_KEY = "ground";
 const DUDE_KEY = "dude";
@@ -9,11 +10,12 @@ export default class GameScene extends Phaser.Scene {
     super("game-scene");
     this.player = undefined;
     this.cursors = undefined;
+    this.scoreLabel = undefined;
   }
   preload() {
     //Preload Sprites Images
     this.load.image("sky", "/assets/sky.png");
-    this.load.image(GROUND_KEY, "/assets/ground.png");
+    this.load.image(GROUND_KEY, "/assets/platform.png");
     this.load.image("star", "/assets/star.png");
     this.load.image("bomb", "/assets/bomb.png");
     this.load.image(STAR_KEY, "/assets/star.png");
@@ -23,6 +25,7 @@ export default class GameScene extends Phaser.Scene {
       frameHeight: 48,
     });
   }
+
   //Sets up the Actual Game
   create() {
     this.add.image(400, 300, "sky");
@@ -30,9 +33,12 @@ export default class GameScene extends Phaser.Scene {
     const platforms = this.createPlatforms();
     const stars = this.createStars();
     this.player = this.createPlayer();
-
+    this.scoreLabel = this.createScoreLabel(16, 16, 0);
     this.physics.add.collider(this.player, platforms);
     this.physics.add.collider(stars, platforms);
+
+    this.physics.add.overlap(this.player, stars, this.collectStar, null, this);
+
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
@@ -84,7 +90,12 @@ export default class GameScene extends Phaser.Scene {
 
     return player;
   }
-
+  createScoreLabel(x, y, score) {
+    const style = { fontSize: "32px", fill: "#000" };
+    const label = new ScoreLabel(this, x, y, score, style);
+    this.add.existing(label);
+    return label;
+  }
   createStars() {
     const stars = this.physics.add.group({
       key: STAR_KEY,
@@ -107,5 +118,10 @@ export default class GameScene extends Phaser.Scene {
     platforms.create(750, 220, GROUND_KEY);
 
     return platforms;
+  }
+  collectStar(player, star) {
+    star.disableBody(true, true);
+
+    this.scoreLabel.add(10);
   }
 }
