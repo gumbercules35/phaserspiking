@@ -128,6 +128,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.submitScore(this.scoreLabel.score);
 
+    this.createHighScores(highScores);
     this.gameOverText = this.add
       .text(400, 300, "Game Over :)", this.gameOverTextStyle)
       .setOrigin(0.5);
@@ -170,6 +171,14 @@ export default class GameScene extends Phaser.Scene {
     const label = new ScoreLabel(this, x, y, score, style);
     this.add.existing(label);
     return label;
+  }
+  createHighScores(scores) {
+    const style = { fontSize: "32px", fill: "#000" };
+
+    scores.forEach(({ score }, index) => {
+      const label = new ScoreLabel(this, 100, 50 + 20 * index, score, style);
+      this.add.existing(label);
+    });
   }
   createStars() {
     const stars = this.physics.add.group({
