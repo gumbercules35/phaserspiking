@@ -44,6 +44,9 @@ export default class GameScene extends Phaser.Scene {
     this.load.image("bomb", "/assets/bomb.png");
     this.load.image(STAR_KEY, "/assets/star.png");
     this.load.image(BOMB_KEY, "assets/bomb.png");
+    this.load.audio("death-noise", "/assets/sfx1.wav");
+    this.load.audio("collect-noise", "/assets/sfx2.wav");
+    this.load.audio("background-music", "/assets/background.wav");
 
     this.load.spritesheet(DUDE_KEY, "/assets/dude.png", {
       frameWidth: 32,
@@ -53,6 +56,12 @@ export default class GameScene extends Phaser.Scene {
 
   //Sets up the Actual Game
   create() {
+    this.explode = this.sound.add("death-noise", { loop: false });
+    this.collect = this.sound.add("collect-noise", { loop: false });
+    this.music = this.sound.add("background-music", { loop: true });
+
+    this.music.play();
+
     this.add.image(400, 300, "sky");
 
     const platforms = this.createPlatforms();
@@ -110,6 +119,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   hitBomb(player, bomb) {
+    this.explode.play();
     this.physics.pause();
 
     player.setTint(0xff0000);
@@ -194,6 +204,7 @@ export default class GameScene extends Phaser.Scene {
   }
   collectStar(player, star) {
     star.disableBody(true, true);
+    this.collect.play();
 
     this.scoreLabel.add(10);
 
